@@ -40,7 +40,7 @@ public class Practice {
     visited.add(current);
     
     int count = 0;
-    if (current.data % 2 == 1) {
+    if (current.data % 2 != 0) {
       count = 1;
     }
     
