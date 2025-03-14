@@ -151,6 +151,29 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    //base case
+    if (v1 == null || v2 == null) return false;
+    //instantiate Set inside helper method
+    //call helper method
+    boolean oneWay = twoWayHelper(v1, v2, new HashSet<>());
+    //repeat for opposite direction
+    
+    //call helper method
+    boolean otherWay = twoWayHelper(v2, v1, new HashSet<>());
+    return oneWay && otherWay;
+  }
+  private static <T> boolean twoWayHelper(Vertex<T> current, Vertex<T> v2, Set<Vertex<T>> visited) {
+    //base case -> successfully reached target vertex
+    if (current == v2) return true;
+    //already visited? stop recursion!
+    if (visited.contains(current)) return false;
+    //add current to visited to avoid looping
+    visited.add(current);
+    //for each iterate all neighbors of current
+    for (Vertex<T> neighbor : current.neighbors) {
+      //recursively transverse each neighbor of current
+      if (twoWayHelper(neighbor, v2, visited)) return true;
+    }
     return false;
   }
 
@@ -167,6 +190,22 @@ public class Practice {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
+    //base case
+    if (starting < 0 || ending < 0 || graph == null || !graph.containsKey(starting) || !graph.containsKey(ending)) return false;
+    //call helper method inside boolean solution return
+    return positivePathExistsHelper(graph, starting, ending, new HashSet<>());
+  }
+  private static boolean positivePathExistsHelper(Map<Integer, Set<Integer>> graph, int current, int ending, Set<Integer> visited) {
+    //base case -> have we reached ending via current?
+    if (current == ending) return true;
+    //have we been here already? if so return false
+    if (visited.contains(current)) return false;
+    //add current to visited as tracking to avoid looping
+    visited.add(current);
+    //for each to iterate neighbors of current
+    for (Integer neighbor : graph.getOrDefault(current, Collections.emptySet())) {
+      if (neighbor > 0 && positivePathExistsHelper(graph, neighbor, ending, visited)) return true;
+    }
     return false;
   }
 
@@ -180,6 +219,9 @@ public class Practice {
    * @return true if a person in the extended network works at the specified company, false otherwise
    */
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
+    //base case
+    if (person == null) return false;
+    
     return false;
   }
 }
