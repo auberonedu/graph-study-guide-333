@@ -221,7 +221,25 @@ public class Practice {
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
     //base case
     if (person == null) return false;
-    
+    //call helper
+    return hasExtendedConnectionAtCompanyHelper(person, companyName, new HashSet<>());
+  }
+  private static boolean hasExtendedConnectionAtCompanyHelper(Professional currentPerson, String companyName, Set<Professional> visited) {
+    //base case: if we've reached via DFS a person
+    //working at same company as starting person
+    //return true; **use .equals() for String comparisons
+    if (currentPerson.getCompany().equals(companyName)) return true;
+    //have we visited this person already? return false!
+    if (visited.contains(currentPerson)) return false;
+    //add currentPerson to visited Set
+    visited.add(currentPerson);
+    //for-each iterates all connections currentPerson has
+    for (Professional connection : currentPerson.getConnections()) {
+      //if recursion step is true, return true
+      if (hasExtendedConnectionAtCompanyHelper(connection, companyName, visited)) {
+        return true;
+      } 
+    }
     return false;
   }
 }
