@@ -1,6 +1,12 @@
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Practice {
 
@@ -25,7 +31,25 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    int oddCount = 0;
+    oddCount += oddVertices(starting, oddCount, new HashSet<Vertex<Integer>>());
+    return oddCount;
+  }
+
+  public static int oddVertices(Vertex<Integer> current, int oddCount, HashSet<Vertex<Integer>> record) {
+    if (current == null) return oddCount;
+    if (record.contains(current)) return oddCount;
+    record.add(current);
+
+    if (current.data % 2 != 0) {
+      oddCount++;
+    }
+
+    for (var neighbor: current.neighbors) {
+      oddCount = oddVertices(neighbor, oddCount, record);
+    }
+
+    return oddCount;
   }
 
   /**
@@ -48,7 +72,22 @@ public class Practice {
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
     // Unimplemented: perform a depth-first search and sort the collected values.
-    return null;
+    List<Integer> sortedReachedValues = new ArrayList<>();
+    if (starting == null) return sortedReachedValues;
+    sortedReachable(starting, sortedReachedValues, new HashSet<Vertex<Integer>>());
+    // I looked up how to make sort() work. I'm using the Comparator class as an arg because Integers implement the Comparable interface
+    sortedReachedValues.sort(Comparator.naturalOrder());
+    return sortedReachedValues;
+  }
+
+  public static void sortedReachable(Vertex<Integer> current, List<Integer> sortedReacheableValues, HashSet<Vertex<Integer>> record) {
+    if (record.contains(current)) return;
+    record.add(current);
+    sortedReacheableValues.add(current.data);
+
+    for (var neighbor: current.neighbors) {
+      sortedReachable(neighbor, sortedReacheableValues, record);
+    }
   }
 
   /**
@@ -62,7 +101,24 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    List<Integer> sortedReachableValues = new ArrayList<>();
+    if (!graph.containsKey(starting)) {
+      return sortedReachableValues;
+    }
+
+    sortedReachable(graph, starting, sortedReachableValues);
+
+    sortedReachableValues.sort(Comparator.naturalOrder());
+    return sortedReachableValues;
+  }
+
+  public static void sortedReachable(Map<Integer, Set<Integer>> graph, int current, List<Integer> sortedReachableValues) {
+    if (sortedReachableValues.contains(current)) return;
+    sortedReachableValues.add(current);
+
+    for (var neighbor: graph.get(current)) {
+      sortedReachable(graph, neighbor, sortedReachableValues);
+    }
   }
 
   /**
@@ -80,7 +136,23 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
-    return false;
+    if (v1 == null || v2 == null) return false;
+    if (v1 == v2) return true;
+
+    boolean v1Tov2 = twoWay(v1, v2, new HashSet<Vertex<T>>(), false);
+    boolean v2Tov1 = twoWay(v2, v1, new HashSet<Vertex<T>>(), false);
+    return (v1Tov2 && v2Tov1);
+  }
+
+  public static <T> boolean twoWay(Vertex<T> current, Vertex<T> end, HashSet<Vertex<T>> record, boolean connect) {
+    if (record.contains(current)) return connect;
+    record.add(current);
+    if (current == end) return true;
+
+    for (var neighbor: current.neighbors) {
+      connect = twoWay(neighbor, end, record, connect);
+    }
+    return connect;
   }
 
   /**
@@ -96,7 +168,26 @@ public class Practice {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
-    return false;
+    if (!graph.containsKey(starting) || !graph.containsKey(ending) || starting < 0 || ending < 0) return false;
+
+    boolean exists = false;
+
+    exists = positivePathExists(graph, starting, ending, exists, new HashSet<Integer>());
+
+    return exists;
+  }
+
+  public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int current, int ending, boolean exists, HashSet<Integer> record) {
+    if (record.contains(current)) return exists;
+    record.add(current);
+    if (current == ending) return true;
+
+    if (current < 0) return false;
+
+    for (var neighbor: graph.get(current)) {
+      exists = positivePathExists(graph, neighbor, ending, exists, record);
+    }
+    return exists;
   }
 
   /**
@@ -109,6 +200,24 @@ public class Practice {
    * @return true if a person in the extended network works at the specified company, false otherwise
    */
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
-    return false;
+    if (person == null) return false;
+    boolean connection = false;
+
+    connection = hasExtendedConnectionAtCompany(person, companyName, connection, new HashSet<Professional>());
+
+    return connection;
+  }
+
+  public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName, boolean connection, HashSet<Professional> record) {
+    if (record.contains(person)) return connection;
+    record.add(person);
+
+    if (person.getCompany().equals(companyName)) return true;
+
+    for (Professional acquaintance: person.getConnections()) {
+      connection = hasExtendedConnectionAtCompany(acquaintance, companyName, connection, record);
+    }
+
+    return connection;
   }
 }
