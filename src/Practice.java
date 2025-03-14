@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 
 public class Practice {
 
@@ -25,7 +26,31 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    if (starting == null) return 0;
+
+    //initialize visited Set
+    Set<Vertex<Integer>> visited = new HashSet<>();
+
+    //start recursive traversal with starting vertex
+    return oddVerticesHelper(starting, visited);
+  }
+  //helper method-
+  //no extra shared mutable variables needed—recursion handles
+  //accumulation through returns
+  private static int oddVerticesHelper(Vertex<Integer> current, Set<Vertex<Integer>> visited) {
+    //base case-if we've already visited this vertex return immediately
+    if(visited.contains(current)) return 0;
+    //mark current as visited to avoid infinite loops
+    visited.add(current);
+    //count this vertex.data if odd
+    int count = (current.data % 2 != 0) ? 1 : 0;
+    //for-each iterates each neighbor of current
+    for (Vertex<Integer> neighbor : current.neighbors) {
+      //recursion step adds up counts returned from neighbors
+      count += oddVerticesHelper(neighbor, visited);
+    }
+    //return total count accumulated from this vertex downward
+    return count;
   }
 
   /**
