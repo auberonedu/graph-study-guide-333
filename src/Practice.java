@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 public class Practice {
 
@@ -122,6 +123,10 @@ public class Practice {
 
   }
 
+
+
+
+
   /**
    * Returns a sorted list of all values reachable from the given starting vertex in the provided graph.
    * The graph is represented as a map where each key is a vertex and its corresponding value is a set of neighbors.
@@ -133,8 +138,29 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    if(graph == null || !graph.containsKey(starting)) return new ArrayList<>();
+
+    Set<Integer> visited = new HashSet<>();
+    return sortedReachableHelper(graph, starting, visited);
+    
   }
+
+  public static List<Integer> sortedReachableHelper(Map<Integer, Set<Integer>> graph, int starting, Set<Integer> visited){
+    if(visited.contains(starting)) return new ArrayList<>();
+
+    visited.add(starting);
+    List<Integer> sortedList = new ArrayList<>();
+    sortedList.add(starting);
+
+    for(var neighbor: graph.get(starting)){
+      sortedList.addAll(sortedReachableHelper(graph, neighbor, visited));
+    }
+
+    
+    Collections.sort(sortedList);
+    return sortedList;
+  }
+  
 
   /**
    * Returns true if and only if it is possible both to reach v2 from v1 and to reach v1 from v2.
@@ -151,8 +177,36 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
-    return false;
+    if(v1 == null || v2 == null) return false;
+
+    if(v1 == v2) return true;
+
+    return twoWayHelper(v1, v2) && twoWayHelper(v2, v1);
+
   }
+
+  private static <T> boolean twoWayHelper(Vertex<T> start, Vertex<T> target){
+
+    Set<Vertex<T>> visited = new HashSet<>();
+    Stack<Vertex<T>> stack = new Stack<>();
+
+    stack.push(start);
+
+    while(!stack.isEmpty()){
+      Vertex<T> current = stack.pop();
+      if(current.equals(target)) return true;
+      if(!visited.add(current)) continue;
+
+      for(Vertex<T> neighbor : current.neighbors){
+        stack.push(neighbor);
+      }
+    }
+
+
+    return false; 
+
+  }
+  
 
   /**
    * Returns whether there exists a path from the starting to ending vertex that includes only positive values.
