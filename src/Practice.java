@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,39 +32,36 @@ public class Practice {
     if(starting == null) {
       return 0;
     }
-    int coutner = 0;
+    
 
-    if(starting.data % 2 != 0){
-
-     counter = counter + 1;
-
-    }
+    
   
     Set<Vertex<Integer>> visited = new HashSet<>();
-    oddVerticesHelper(starting, visited, counter);
+    return oddVerticesHelper(starting, visited);
   
 
     
-    return 0;
+    
   }
 
-  public static void oddVerticesHelper(Vertex<Integer> starting, Set<Vertex<Integer>> visited, int coutner){
+  public static int oddVerticesHelper(Vertex<Integer> starting, Set<Vertex<Integer>> visited){
 
-    if(starting == null){
-      return;
-    }
-
-    visited.add(starting);
-
-    for(var vertex : starting.neighbors){
-      if(starting.data % 2 != 0){
-        coutner++;
-      }
-
-      oddVertices(vertex, visited,coutner);
+    if(starting == null || visited.contains(starting)){
+      return 0;
     }
     
-    return coutner;
+
+    visited.add(starting);
+    
+    int counter = (starting.data % 2 != 0) ? 1 : 0;
+
+
+    for(var vertex : starting.neighbors){
+      
+      counter += oddVerticesHelper(vertex, visited);
+    }
+    
+    return counter;
   }
 
 
@@ -85,8 +85,41 @@ public class Practice {
    * @return a sorted list of all reachable vertex values by 
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
-    // Unimplemented: perform a depth-first search and sort the collected values.
-    return null;
+    if(starting == null) {
+      return new ArrayList<>();
+    }
+    
+
+    
+  
+    Set<Vertex<Integer>> visited = new HashSet<>();
+    return sortedReachableHelper(starting, visited);
+  
+    
+  }
+
+  public static List<Integer> sortedReachableHelper(Vertex<Integer> starting, Set<Vertex<Integer>> visited){
+    if(starting == null || visited.contains(starting)) return new ArrayList<>();;
+
+    visited.add(starting);
+
+    for(var vertex : starting.neighbors){
+      sortedReachableHelper(vertex, visited);
+    }
+
+    //adding
+
+    List<Integer> sortedList = new ArrayList<>();
+
+    for(var vertex : visited){
+      sortedList.add(vertex.data);
+    }
+
+    Collections.sort(sortedList);
+
+    return sortedList;
+    
+
   }
 
   /**
