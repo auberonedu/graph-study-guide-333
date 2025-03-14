@@ -105,14 +105,37 @@ public class Practice {
    * It is assumed that there are no duplicate vertices.
    * If the starting vertex is not present as a key in the map, returns an empty list.
    *
-   * @param graph a map representing the graph
+   * @param graph a map representing the adjacency list of the graph
    * @param starting the starting vertex value
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    //base case (  more generic: return Collections.emptySet();  )
+    if (graph == null || !graph.containsKey(starting)) return new ArrayList<>();
+    //instantiate visited Set
+    Set<Integer> visited = new HashSet<>();
+
+    sortedReachableHelper(graph, starting, visited);
+
+    //convert visited data into List format
+    List<Integer> sorted = new ArrayList<>(visited);
+    //sort newly formed List
+    Collections.sort(sorted);
+    //return List of sorted reachable 'vertices'
+    return sorted;
   }
 
+  private static void sortedReachableHelper(Map<Integer, Set<Integer>> graph, int current, Set<Integer> visited) {
+    //base case - if we've been here already then return immediately
+    if (visited.contains(current)) return;
+    //add current to visited
+    visited.add(current);
+    //for each avoids getting a null pointer exception or needing 
+    //an extra check for null values explicitly
+    for (Integer neighbor : graph.getOrDefault(current, Collections.emptySet())) { //recursively transverse to fill up visited Set
+      sortedReachableHelper(graph, neighbor, visited);
+    }
+  }
   /**
    * Returns true if and only if it is possible both to reach v2 from v1 and to reach v1 from v2.
    * A vertex is always considered reachable from itself.
